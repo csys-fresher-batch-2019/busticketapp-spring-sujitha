@@ -32,8 +32,7 @@ public class Validator {
 
 	public void validateUserLoginForm(long phoneNum, String password) throws ValidatorException {
 		UserDetails u = new UserDetails();
-		if (phoneNum == 0 || Long.toString(u.getUserPhnNum()).length() < 10
-				|| Long.toString(u.getUserPhnNum()).length() > 10) {
+		if (phoneNum == 0) {
 			throw new ValidatorException("Mobile-number is invalid");
 		}
 		if (password == null || "".equals(password.trim())) {

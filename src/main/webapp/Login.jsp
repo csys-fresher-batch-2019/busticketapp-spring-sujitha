@@ -27,7 +27,16 @@ Enter Password:<input type="password" name="password"placeholder="password" minl
 <br>
 <br>
 <a href ="Registration.jsp" class="btn btn-primary">Create New Account</a>
-
+<%String errorMessage1 = (String)request.getParameter("errorMessage");
+if(errorMessage1 !=null)
+{%>
+<font color="red"style="font: bold"><%=errorMessage1%>
+<%}%>
+<%String errorMessage = (String)request.getAttribute("errorMessage");
+if(errorMessage !=null)
+{%>
+<font color="red"style="font: bold"><%=errorMessage%>
+<%}%>
 </form>
 </div>
 </body>
