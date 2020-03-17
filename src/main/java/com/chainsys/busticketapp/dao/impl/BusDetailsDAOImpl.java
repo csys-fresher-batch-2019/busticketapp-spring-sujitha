@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,29 +30,29 @@ public class BusDetailsDAOImpl implements BusDetailsDAO {
 			pst.setInt(2, travelId);
 			int rows = pst.executeUpdate();
 			logger.info("No Of Rows : " + rows);
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_UPDATE);
+			throw new DbException("UNABLE TO UPDATE FARE", e);
 		}
 	}
 
 	public int findAvailbleSeatsByTravelId(int travelId) throws DbException {
 		String sql = "select (bl.no_of_seats-bd.available_seats)availableSeats from  buslist bl,busdetails bd where bl.bus_num=bd.bus_num and bd.travel_id=?";
 		logger.info("Seats : " + sql);
-		int a = 0;
+		int availableseats = 0;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setInt(1, travelId);
 			try (ResultSet rs = pst.executeQuery();) {
-				while (rs.next()) {
-					a = rs.getInt("availableseats");
+				if (rs.next()) {
+					availableseats = rs.getInt("availableseats");
 				}
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND SEATS", e);
 		}
-		return a;
+		return availableseats;
 	}
 
 	public void save(BusDetails bus) throws DbException {
@@ -69,29 +70,29 @@ public class BusDetailsDAOImpl implements BusDetailsDAO {
 			pst.setInt(8, bus.getAvailableSeats());
 			int rows = pst.executeUpdate();
 			logger.info("No Of Rows : " + rows);
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_ADD);
+			throw new DbException("UNABLE TO ADD DATA", e);
 		}
 	}
 
 	public int findPriceByTravelId(int travelId) throws DbException {
 		String sql = "select fair as f  from busdetails where travel_id=?";
 		logger.info("Price : " + sql);
-		int b = 0;
+		int price = 0;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setInt(1, travelId);
 			try (ResultSet rs = pst.executeQuery();) {
 				if (rs.next()) {
-					b = rs.getInt("f");
+					price = rs.getInt("f");
 				}
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND FARE", e);
 		}
-		return b;
+		return price;
 	}
 
 	public ArrayList<BusFare> findBusNameAndPriceByBusNumber(String busName) throws DbException {
@@ -110,32 +111,11 @@ public class BusDetailsDAOImpl implements BusDetailsDAO {
 					busfares.add(bd);
 				}
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND BUS NAME AND FARE", e);
 		}
 		return busfares;
-	}
-
-	public int findAvailableSeatsByBusNumberAndTravelId() throws DbException {
-		String sql = "select tb.travel_id,bl.no_of_seats,bl.no_of_seats-sum(tb.no_of_seats_booked)  available_seats from buslist bl,ticket_booking tb,busdetails bd where bl.bus_num=bd.bus_num and bd.travel_id=tb.travel_id group by bl.no_of_seats,tb.travel_id,available_seats";
-		logger.info("Available Seats : " + sql);
-		int d = 0;
-		try (Connection connection = DbConnection.getConnection();
-				PreparedStatement pst = connection.prepareStatement(sql);) {
-			try (ResultSet rs = pst.executeQuery();) {
-				while (rs.next()) {
-					int travelId = rs.getInt("travel_id");
-					int noOfSeat = rs.getInt("no_of_seats");
-					int availableSeat = rs.getInt("available_seats");
-					System.out.println(travelId + "," + noOfSeat + "," + availableSeat);
-				}
-			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
-		}
-		return d;
 	}
 
 	public String findBusNameByToLocation(String toLocation) throws DbException {
@@ -150,9 +130,9 @@ public class BusDetailsDAOImpl implements BusDetailsDAO {
 					e1 = rs.getString("bus_name");
 				}
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND BUS NAME,SEATS", e);
 		}
 		return e1;
 	}
@@ -173,9 +153,9 @@ public class BusDetailsDAOImpl implements BusDetailsDAO {
 					busdetails.add(bl);
 				}
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND TIMINGS", e);
 		}
 		return busdetails;
 	}

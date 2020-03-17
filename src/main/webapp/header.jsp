@@ -14,9 +14,7 @@ Integer userId = (Integer)session.getAttribute("userid");
         <a class="nav-link" href="index.jsp">Home <span class="sr-only">(current)</span></a>
       </li>
      
-      <li class="nav-item">
-        <a class="nav-link" href="DisplayBookedUserDetails">My Tickets</a>
-      </li>
+     
       <li class="nav-item">
         <a class="nav-link" href="Admin.jsp">Admin</a>
       </li>
@@ -39,6 +37,9 @@ Integer userId = (Integer)session.getAttribute("userid");
       </li>
        <li class="nav-item">
         <a class="nav-link" href="Search.jsp">Search</a>
+      </li>
+       <li class="nav-item">
+        <a class="nav-link" href="DisplayBookedUserDetails">My Tickets</a>
       </li>
         <li class="nav-item">
         <a class="nav-link" href="LogoutServlet">Logout</a>

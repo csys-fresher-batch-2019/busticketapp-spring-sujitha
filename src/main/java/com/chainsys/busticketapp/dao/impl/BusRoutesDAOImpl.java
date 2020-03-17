@@ -3,38 +3,39 @@ package com.chainsys.busticketapp.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.chainsys.busticketapp.dao.BusRoutesDAO;
 import com.chainsys.busticketapp.domain.BusRoutes;
 import com.chainsys.busticketapp.exception.DbException;
 import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.util.DbConnection;
-
+@Repository
 public class BusRoutesDAOImpl implements BusRoutesDAO {
 	private static final Logger logger = LoggerFactory.getLogger(BusRoutesDAOImpl.class);
 
 	public String findToLocationByRouteNumber(int routeNo) throws DbException {
 		String s = "select to_location from busroutes where route_no=?";
 		logger.info("ToLocation : " + s);
-		String str = null;
+		String location = null;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(s);) {
 			pst.setInt(1, routeNo);
-			try (ResultSet rows = pst.executeQuery();) {
-				while (rows.next()) {
-					str = rows.getString("to_location");
+			try (ResultSet rs = pst.executeQuery();) {
+				if (rs.next()) {
+					location = rs.getString("to_location");
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND TO LOCATION", e);
 		}
-		return str;
+		return location;
 	}
 
 	public void save(int routeNo, String fromLocation, String toLocation) throws DbException {
@@ -47,9 +48,8 @@ public class BusRoutesDAOImpl implements BusRoutesDAO {
 			pst.setString(3, toLocation);
 			int row = pst.executeUpdate();
 			logger.info("No of Rows: " + st);
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_ADD);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO ADD ROUTES", e);
 		}
 	}
 
@@ -62,30 +62,28 @@ public class BusRoutesDAOImpl implements BusRoutesDAO {
 			pst.setInt(2, routeNo);
 			int row = pst.executeUpdate();
 			logger.info("No Of Rows : " + row);
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_UPDATE);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO UPDATE TO LOCATION", e);
 		}
 	}
 
 	public int findRouteByFromAndToLocations(String fromLocation, String toLocation) throws DbException {
 		String sql = "select route_no from busroutes where from_location =? and to_location=?";
 		logger.info("Routes: " + sql);
-		int e1 = 0;
+		int route = 0;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setString(1, fromLocation);
 			pst.setString(2, toLocation);
 			try (ResultSet rs = pst.executeQuery();) {
 				if (rs.next()) {
-					e1 = rs.getInt("route_no");
+					route = rs.getInt("route_no");
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO ROUTE NO", e);
 		}
-		return e1;
+		return route;
 	}
 
 	public List<BusRoutes> findAll() throws DbException {
@@ -106,9 +104,8 @@ public class BusRoutesDAOImpl implements BusRoutesDAO {
 					busroutes.add(br);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND ROUTES", e);
 		}
 		return busroutes;
 	}
@@ -127,9 +124,8 @@ public class BusRoutesDAOImpl implements BusRoutesDAO {
 					busroutes.add(br);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FROM LOCATION", e);
 		}
 		return busroutes;
 	}
@@ -148,9 +144,8 @@ public class BusRoutesDAOImpl implements BusRoutesDAO {
 					busroutes.add(br);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND TO LOCATION", e);
 		}
 		return busroutes;
 	}

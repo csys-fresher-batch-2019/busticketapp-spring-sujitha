@@ -12,32 +12,33 @@ import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
-import com.chainsys.busticketapp.dao.BookingDeatilsDAO;
+import com.chainsys.busticketapp.dao.BookingDetailDAO;
 import com.chainsys.busticketapp.domain.Booking;
 import com.chainsys.busticketapp.exception.DbException;
 import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.service.SeatService;
 import com.chainsys.busticketapp.util.DbConnection;
+@Repository
 
-public class BookingDetailDAOImpl implements BookingDeatilsDAO {
+public class BookingDetailDAOImpl implements BookingDetailDAO {
 	private static final Logger logger = LoggerFactory.getLogger(BookingDetailDAOImpl.class);
 
-	public int findbyBookedDateAndBusNumber(LocalDate bookedDate, int BusNum) throws DbException {
+	public int findbyBookedDateAndBusNumber(LocalDate bookedDate, int busNum) throws DbException {
 		int seats = 0;
 		String sql = " select max(seat_no) as seat_no from booking where booked_date=? and bus_num= ?";
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setDate(1, Date.valueOf(bookedDate));
-			pst.setInt(2, BusNum);
+			pst.setInt(2, busNum);
 			try (ResultSet rs = pst.executeQuery();) {
 				if (rs.next()) {
 					seats = rs.getInt("seat_no");
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("unable to find seats", e);
 		}
 		return seats;
 	}
@@ -45,7 +46,7 @@ public class BookingDetailDAOImpl implements BookingDeatilsDAO {
 	public Booking findbyBookedDateAndBusNumberAndSeatNo(LocalDate bookedDate, int BusNum, int seatNo)
 			throws DbException {
 		String sql = " select seat_no, user_gender,gender_preferences from booking where booked_date=? and bus_num= ? and seat_no =?";
-		Booking b = null;
+		Booking booking = null;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setDate(1, Date.valueOf(bookedDate));
@@ -53,21 +54,20 @@ public class BookingDetailDAOImpl implements BookingDeatilsDAO {
 			pst.setInt(3, seatNo);
 			try (ResultSet rs = pst.executeQuery();) {
 				if (rs.next()) {
-					b = new Booking();
-					b.setSeatNo(rs.getInt("seat_no"));
-					b.setUserGender(rs.getString("user_gender"));
-					b.setGenderPreference(rs.getString("gender_preferences"));
+					booking = new Booking();
+					booking.setSeatNo(rs.getInt("seat_no"));
+					booking.setUserGender(rs.getString("user_gender"));
+					booking.setGenderPreference(rs.getString("gender_preferences"));
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("unable to find seat number,gender,gender_preference", e);
 		}
-		return b;
+		return booking;
 	}
 
 	public HashMap<Integer, String> findByBusNumber(int busNum) throws DbException {
-		String userGender1 = "F";
+
 		String sql = "select seat_no,user_gender from booking where bus_num=?";
 		HashMap<Integer, String> m = new HashMap<Integer, String>();
 		try (Connection connection = DbConnection.getConnection();
@@ -81,15 +81,14 @@ public class BookingDetailDAOImpl implements BookingDeatilsDAO {
 					m.put(seatNo, gender);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("unable to find seat number,gender", e);
 		}
 		return m;
 	}
 
 	public int addUserBookingDetails(Booking booking) throws DbException {
-		SeatDAOImpl sd = new SeatDAOImpl();
+
 		SeatService ss = new SeatService();
 		int nextSeatNo = ss.getNextSeatNo(booking.getBookedDate(), booking.getBusNum());
 		booking.setSeatNo(nextSeatNo);
@@ -100,7 +99,6 @@ public class BookingDetailDAOImpl implements BookingDeatilsDAO {
 
 		String sql1 = "select no_of_seats from buslist where bus_num=?";
 		String str = "insert into booking(booking_id,user_id,bus_num,user_gender,seat_no,booked_date,gender_preferences,amount) values(booked_id.nextval,?,?,?,?,?,?,?)";
-		System.out.println(str);
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst1 = connection.prepareStatement(sql1);
 				PreparedStatement pst = connection.prepareStatement(str);) {
@@ -128,16 +126,14 @@ public class BookingDetailDAOImpl implements BookingDeatilsDAO {
 						System.out.println("seats are not available");
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_ADD);
+		} catch (SQLException e) {
+			throw new DbException("unable to add data", e);
 		}
 		return (rows);
 	}
 
 	public int save(Booking booking, int seatNo) throws DbException {
 		String str = "insert into booking(booking_id,user_id,bus_num,user_gender,seat_no,booked_date,gender_preferences,amount) values(booked_id.nextval,?,?,?,?,?,?,?)";
-		System.out.println(str);
 		int flag = 0;
 		HashMap<String, String> hm = new HashMap<String, String>();
 		SeatDAOImpl si = new SeatDAOImpl();
@@ -182,9 +178,8 @@ public class BookingDetailDAOImpl implements BookingDeatilsDAO {
 			} else {
 				System.out.println("seats are not available");
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_ADD);
+		} catch (SQLException e) {
+			throw new DbException("unable to add data", e);
 		}
 		return (flag);
 	}
@@ -206,21 +201,20 @@ public class BookingDetailDAOImpl implements BookingDeatilsDAO {
 	@Override
 	public void update(String bookingId) throws DbException {
 		String sql = "update booking set status='CANCELLED' where booking_id = ?";
-		System.out.println(sql);
+		logger.info("Update : " + sql);
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setString(1, bookingId);
 			int rows = pst.executeUpdate();
 			System.out.println(rows);
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_UPDATE);
+		} catch (SQLException e) {
+			throw new DbException("unable to update status", e);
 		}
 	}
 
 	public int save(Booking booking) throws Exception {
 		String str = "insert into booking(booking_id,user_id,bus_num,user_gender,seat_no,booked_date,gender_preferences,amount) values(booked_id.nextval,?,?,?,?,?,?,?)";
-		System.out.println(str);
+		logger.info("Booking : " + str);
 		int rows = 0;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(str);) {
@@ -232,29 +226,27 @@ public class BookingDetailDAOImpl implements BookingDeatilsDAO {
 			pst.setString(6, booking.getGenderPreference());
 			pst.setInt(7, booking.getAmount());
 			rows = pst.executeUpdate();
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_ADD);
+		} catch (SQLException e) {
+			throw new DbException("unable to add", e);
 		}
 		return (rows);
 	}
 
 	public int findPriceByBusNumber(int busNum) throws Exception {
 		String sql = "Select fair from busdetails where bus_num=?";
-		System.out.println("");
-		int a = 0;
+		logger.info("Fare : " + sql);
+		int price = 0;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql)) {
 			pst.setInt(1, busNum);
 			try (ResultSet rs = pst.executeQuery()) {
 				if (rs.next()) {
-					a = rs.getInt("fair");
+					price = rs.getInt("fair");
 				}
 			}
 		} catch (SQLException e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("unable to find fare", e);
 		}
-		return a;
+		return price;
 	}
 }

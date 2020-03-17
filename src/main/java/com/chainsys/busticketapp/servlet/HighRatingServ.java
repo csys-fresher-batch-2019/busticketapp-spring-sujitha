@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.chainsys.busticketapp.dao.impl.OperatorsDetailsDAOImpl;
 import com.chainsys.busticketapp.dto.Buses;
@@ -22,10 +23,12 @@ public class HighRatingServ extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		OperatorsDetailsDAOImpl od = new OperatorsDetailsDAOImpl();
+		HttpSession sess = request.getSession();
+		 int route=(Integer)sess.getAttribute("route_no");
 		Buses b = new Buses();
 		try {
 			List<Buses> list = new ArrayList<Buses>();
-			list = od.findAllByMaximumRatings();
+			list = od.findAllByMaximumRatings(route,route);
 			request.setAttribute("high", list);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("HighRating.jsp");
 			dispatcher.forward(request, response);

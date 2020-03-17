@@ -6,9 +6,9 @@ import java.util.HashMap;
 import com.chainsys.busticketapp.domain.Booking;
 import com.chainsys.busticketapp.exception.DbException;
 
-public interface BookingDeatilsDAO {
+public interface BookingDetailDAO {
 
-	public int findbyBookedDateAndBusNumber(LocalDate bookedDate, int BusNum) throws DbException;
+	public int findbyBookedDateAndBusNumber(LocalDate bookedDate, int busNum) throws DbException;
 
 	public Booking findbyBookedDateAndBusNumberAndSeatNo(LocalDate bookedDate, int BusNum, int seatNo) throws DbException;
 

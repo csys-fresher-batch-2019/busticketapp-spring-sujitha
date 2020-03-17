@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,9 +38,8 @@ public class SeatDAOImpl {
 				}
 				logger.info("Count : " + c);
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND SEAT NO", e);
 		}
 		return c;
 	}
@@ -47,27 +47,25 @@ public class SeatDAOImpl {
 	public int findTotalSeatsByBusNumber(int BusNum) throws DbException {
 		String s = "select no_of_seats from buslist where bus_num=?";
 		logger.info("No Of Seats : " + s);
-		int a = 0;
+		int seats = 0;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(s);) {
 			pst.setInt(1, BusNum);
 			try (ResultSet rs = pst.executeQuery();) {
 				if (rs.next()) {
-					a = rs.getInt("no_of_seats");
+					seats = rs.getInt("no_of_seats");
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND SEATS", e);
 		}
-		return a;
+		return seats;
 	}
 
 	public ArrayList<Integer> findUnFilledSeatsByBusNumberAndBookedDate(LocalDate bookedDate, int busNum)
 			throws DbException {
 		String sql = "select min_seat_no -1+level missing_number from (select min(1) min_seat_no,max(10) max_seat_no from booking)connect by  level <=max_seat_no-min_seat_no+1 minus select seat_no  as available_seats from booking where bus_num=? and booked_date=?";
 		logger.info("Seats : " + sql);
-		int a1 = 0;
 		ArrayList<Integer> unSeats = new ArrayList<Integer>();
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
@@ -78,9 +76,8 @@ public class SeatDAOImpl {
 					unSeats.add(rs.getInt(1));
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND UNFILLED SEATS", e);
 		}
 		return unSeats;
 	}
@@ -89,7 +86,6 @@ public class SeatDAOImpl {
 			LocalDate bookedDate) throws DbException {
 		String sql = "select user_gender,gender_preferences from booking where booked_date=? and bus_num=? and seat_no=? ";
 		SeatService s = new SeatService();
-		String s1 = null;
 		HashMap<String, String> hm = new HashMap<String, String>();
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
@@ -102,9 +98,8 @@ public class SeatDAOImpl {
 					hm.put(rs.getString("user_gender"), rs.getString("gender_preferences"));
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND GENDER,GENDER PREFEERNCES", e);
 		}
 		return (hm);
 

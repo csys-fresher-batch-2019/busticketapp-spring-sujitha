@@ -10,6 +10,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 </head>
 <body>
@@ -60,7 +61,17 @@ Enter Date:<input type="date" name="date" required>
 <button type="submit">submit</button>
 <br>
 <br>
-
+<script>
+function setTodayDate(){
+var today = new Date();
+console.log(today);
+var dateStr  = today.toJSON().substr(0,10); //toJSON returns "2020-02-20T09:32:45.644Z" ( get only date)
+console.log(dateStr);
+$("#date").val(dateStr);
+$("#date").attr("min", dateStr);
+}
+setTodayDate();
+</script>
 </form>
 </body>
 </html>

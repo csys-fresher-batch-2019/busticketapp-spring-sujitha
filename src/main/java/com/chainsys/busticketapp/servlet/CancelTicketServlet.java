@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.chainsys.busticketapp.dao.BookingDeatilsDAO;
+import com.chainsys.busticketapp.dao.BookingDetailDAO;
 import com.chainsys.busticketapp.dao.impl.BookingDetailDAOImpl;
 import com.chainsys.busticketapp.exception.DbException;
 
@@ -22,7 +22,7 @@ public class CancelTicketServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String bookingId = request.getParameter("bookingId");
 		System.out.println(bookingId);
-		BookingDeatilsDAO bookingDeatilsDAO = new BookingDetailDAOImpl();
+		BookingDetailDAO bookingDeatilsDAO = new BookingDetailDAOImpl();
 		try {
 			bookingDeatilsDAO.update(bookingId);
 		} catch (DbException e) {

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,46 +36,45 @@ public class TicketBookingDAOImpl implements TicketBookingDAO {
 			pst.setInt(7, tic.getPayment());
 			pst.setString(8, tic.getStatus());
 			int row = pst.executeUpdate();
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_ADD);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO ADD DATA", e);
 		}
 	}
 
 	public int findBookedSeatsByTravelID(int travelId) throws DbException {
 		String n = " select sum(no_of_seats_booked) no_of_seats_booked from ticket_booking where travel_id=? ";
 		logger.info("Booked Seats: " + n);
-		int s = 0;
+		int bookedseats = 0;
 		try (Connection connection = DbConnection.getConnection();
-				PreparedStatement pst = connection.prepareStatement(n);
-				ResultSet rows = pst.executeQuery();) {
+				PreparedStatement pst = connection.prepareStatement(n);) {
 			pst.setInt(1, travelId);
-			if (rows.next()) {
-				s = rows.getInt("no_of_seats_booked");
+			try (ResultSet rs = pst.executeQuery();) {
+				if (rs.next()) {
+					bookedseats = rs.getInt("no_of_seats_booked");
+				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND SEATS", e);
 		}
-		return s;
+		return bookedseats;
 	}
 
 	public int findPriceByStatus(String status) throws DbException {
 		String sql = "select sum(payment) as payment from ticket_booking where status=?";
 		logger.info("Payment : " + sql);
-		int f = 0;
+		int price = 0;
 		try (Connection connection = DbConnection.getConnection();
-				PreparedStatement pst = connection.prepareStatement(sql);
-				ResultSet rows = pst.executeQuery();) {
+				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setString(1, status);
-			if (rows.next()) {
-				f = rows.getInt("payment");
+			try (ResultSet rs = pst.executeQuery();) {
+				if (rs.next()) {
+					price = rs.getInt("payment");
+				}
 			}
 		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND PRICE", e);
 		}
-		return f;
+		return price;
 	}
 
 	public ArrayList<BusSeatsBooked> findBookedDateAndCountSeatsByStatus(String status) throws DbException {
@@ -82,21 +82,21 @@ public class TicketBookingDAOImpl implements TicketBookingDAO {
 		logger.info("Count: " + sql);
 		ArrayList<BusSeatsBooked> list = new ArrayList<BusSeatsBooked>();
 		try (Connection connection = DbConnection.getConnection();
-				PreparedStatement pst = connection.prepareStatement(sql);
-				ResultSet rows = pst.executeQuery();) {
+				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setString(1, status);
-			while (rows.next()) {
-				int s = rows.getInt("total_seats");
-				Date si = rows.getDate("booked_date");
-				LocalDate ld = si.toLocalDate();
-				BusSeatsBooked bsd = new BusSeatsBooked();
-				bsd.setTotalseats(s);
-				bsd.setBookedDate(ld);
-				list.add(bsd);
+			try (ResultSet rs = pst.executeQuery();) {
+				while (rs.next()) {
+					int s = rs.getInt("total_seats");
+					Date si = rs.getDate("booked_date");
+					LocalDate ld = si.toLocalDate();
+					BusSeatsBooked bsd = new BusSeatsBooked();
+					bsd.setTotalseats(s);
+					bsd.setBookedDate(ld);
+					list.add(bsd);
+				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATE,SEATS", e);
 		}
 		return list;
 	}
@@ -104,20 +104,20 @@ public class TicketBookingDAOImpl implements TicketBookingDAO {
 	public int findSeatsCountByTravelIdAndUserId(int travelId, int userId) throws DbException {
 		String sql = "select  count(b.seat_no) as ticket_count from booking b  where travel_id=?  and user_id=?";
 		logger.info("SeatNo : " + sql);
-		int f = 0;
+		int seats = 0;
 		try (Connection connection = DbConnection.getConnection();
-				PreparedStatement pst = connection.prepareStatement(sql);
-				ResultSet rows = pst.executeQuery();) {
+				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setInt(1, travelId);
 			pst.setInt(2, userId);
-			if (rows.next()) {
-				f = rows.getInt("ticket_count");
+			try (ResultSet rs = pst.executeQuery();) {
+				if (rs.next()) {
+					seats = rs.getInt("ticket_count");
+				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND SEATS", e);
 		}
-		return f;
+		return seats;
 	}
 
 	public List<Booking> findAllByUserIdAndBookedDate(int userId) throws Exception {
@@ -149,9 +149,8 @@ public class TicketBookingDAOImpl implements TicketBookingDAO {
 					list.add(bl);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
 		}
 		return list;
 	}

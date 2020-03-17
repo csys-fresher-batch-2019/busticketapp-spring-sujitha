@@ -10,17 +10,17 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
-import com.chainsys.busticketapp.controller.IndexController;
-import com.chainsys.busticketapp.dao.BusListDAO;
-import com.chainsys.busticketapp.domain.BusList;
+import com.chainsys.busticketapp.dao.BusDAO;
+import com.chainsys.busticketapp.domain.Bus;
 import com.chainsys.busticketapp.dto.BusesDetails;
 import com.chainsys.busticketapp.exception.DbException;
 import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.util.DbConnection;
-
-public class BusListDAOImpl implements BusListDAO {
-	private static final Logger logger = LoggerFactory.getLogger(BusListDAOImpl.class);
+@Repository
+public class BusDAOImpl implements BusDAO {
+	private static final Logger logger = LoggerFactory.getLogger(BusDAOImpl.class);
 
 	public void save(int busNum, String busName, int noOfSeats, String seatType, String busModel, String opName)
 			throws DbException {
@@ -38,8 +38,7 @@ public class BusListDAOImpl implements BusListDAO {
 				logger.info("No of Rows inserted : " + row);
 			}
 		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_ADD);
+			throw new DbException("UNABLE TO ADD DATA", e);
 		}
 	}
 
@@ -52,59 +51,55 @@ public class BusListDAOImpl implements BusListDAO {
 			int rows = pst.executeUpdate();
 			logger.info("No of Rows inserted : " + rows);
 		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_UPDATE);
+			throw new DbException("UNABLE TO UPDATE  BUS NAME", e);
 		}
 	}
 
 	public String findBusNamebyBusNumber(int busNum) throws DbException {
 		String name = "select bus_name from buslist where bus_num=?";
 		logger.info("BusName : " + name);
-		String s = null;
+		String busname = null;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(name);) {
 			pst.setInt(1, busNum);
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
-					s = rs.getString("bus_name");
+					busname = rs.getString("bus_name");
 				}
-				connection.close();
 			}
 		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND BUS NAME", e);
 		}
-		return s;
+		return busname;
 	}
 
 	public int findSeatsByBusNumber(int busNum) throws DbException {
 		String seats = "select no_of_seats from buslist where bus_num=?";
 		logger.info("No Of Seats: " + seats);
-		int s = 0;
+		int seat = 0;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(seats);) {
 			pst.setInt(1, busNum);
-			try (ResultSet rows = pst.executeQuery();) {
-				while (rows.next()) {
-					s = rows.getInt("no_of_seats");
+			try (ResultSet rs = pst.executeQuery();) {
+				if (rs.next()) {
+					seat = rs.getInt("no_of_seats");
 				}
 			}
 		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND SEATS", e);
 		}
-		return s;
+		return seat;
 	}
 
-	public List<BusList> findAll() throws DbException {
-		List<BusList> list = new ArrayList<BusList>();
+	public List<Bus> findAll() throws DbException {
+		List<Bus> list = new ArrayList<Bus>();
 		String sql = "select*from buslist";
 		logger.info("BusList : " + sql);
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
-					BusList bl = new BusList();
+					Bus bl = new Bus();
 					bl.setBusNum(rs.getInt("bus_num"));
 					bl.setBusName(rs.getString("bus_name"));
 					bl.setNoOfSeats(rs.getInt("no_of_seats"));
@@ -113,8 +108,7 @@ public class BusListDAOImpl implements BusListDAO {
 				}
 			}
 		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND BUS", e);
 		}
 		return list;
 	}
@@ -143,30 +137,9 @@ public class BusListDAOImpl implements BusListDAO {
 				}
 			}
 		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO SELECT DATA", e);
 		}
 		return list1;
-	}
-
-	public void deleteBusName(String busName) throws DbException {
-		String sql = "delete from buslist where bus_name=?";
-		logger.info("Delete Bus Name : " + sql);
-		try (Connection connection = DbConnection.getConnection();
-				PreparedStatement pst = connection.prepareStatement(sql);) {
-			try {
-				pst.setString(1, busName);
-				int row = pst.executeUpdate(sql);
-				System.out.println(row);
-			} catch (Exception e) {
-				System.out.println(e);
-			} finally {
-				System.out.println("There are child records found");
-			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_DELETE);
-		}
 	}
 
 	public int findSeatsByBusNumber(int busNum, LocalDate bookedDate) throws DbException {
@@ -178,14 +151,13 @@ public class BusListDAOImpl implements BusListDAO {
 			Date d = Date.valueOf(bookedDate);
 			pst.setDate(1, d);
 			pst.setInt(2, busNum);
-			ResultSet rows = pst.executeQuery();
-			if (rows.next()) {
-				noOfSeat = rows.getInt("no_of_seats");
+			ResultSet rs = pst.executeQuery();
+			if (rs.next()) {
+				noOfSeat = rs.getInt("no_of_seats");
 			}
 			logger.info("No Of Seats : " + noOfSeat);
 		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+			throw new DbException("UNABLE TO FIND SEATS", e);
 		}
 		return noOfSeat;
 	}

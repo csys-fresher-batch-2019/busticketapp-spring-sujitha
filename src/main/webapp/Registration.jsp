@@ -16,7 +16,7 @@
 <div class="row">
 <div class="col">
 <h3>Registration</h3>
-<form action="Registration">
+<form action="Registration" autocomplete="off">
 
 Enter Name:<input type="text" name="name"placeholder="Enter name" required autofocus/>
 <br/>

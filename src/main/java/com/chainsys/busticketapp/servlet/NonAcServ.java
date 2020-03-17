@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.chainsys.busticketapp.dao.impl.OperatorsDetailsDAOImpl;
 import com.chainsys.busticketapp.dto.Buses;
@@ -24,8 +25,10 @@ public class NonAcServ extends HttpServlet {
 		Buses b = new Buses();
 		List<Buses> list = null;
 		b.setBusModel(request.getParameter("nonac"));
+		HttpSession sess = request.getSession();
+		int route=(Integer)sess.getAttribute("route_no");
 		try {
-			list = od.findAllByBusModel(b.getBusModel());
+			list = od.findAllByBusModel(b.getBusModel(),route);
 			request.setAttribute("nonac", list);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("NonAc.jsp");
 			dispatcher.forward(request, response);

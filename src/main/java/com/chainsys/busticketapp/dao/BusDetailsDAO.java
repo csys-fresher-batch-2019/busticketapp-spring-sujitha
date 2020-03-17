@@ -18,8 +18,6 @@ public interface BusDetailsDAO<Details> {
 
 	public ArrayList<BusFare> findBusNameAndPriceByBusNumber(String busName) throws DbException;
 
-	public int findAvailableSeatsByBusNumberAndTravelId() throws DbException;
-
 	public String findBusNameByToLocation(String toLocation) throws DbException;
 
 	public List<BusDetails> findTimingAndPriceByBusNumber(BusDetails bus) throws DbException;

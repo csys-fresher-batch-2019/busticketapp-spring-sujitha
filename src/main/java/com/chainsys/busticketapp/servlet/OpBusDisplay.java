@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.chainsys.busticketapp.dao.impl.OperatorsDetailsDAOImpl;
 import com.chainsys.busticketapp.dto.Buses;
@@ -21,12 +22,13 @@ public class OpBusDisplay extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		OperatorsDetailsDAOImpl od = new OperatorsDetailsDAOImpl();
-		Buses b = new Buses();
 		List<Buses> list = null;
 		String name = request.getParameter("OperatorName");
 		System.out.println(name);
+		HttpSession sess = request.getSession();
+		int route=(Integer)sess.getAttribute("route_no");
 		try {
-			list = od.findAllByOperatorName(name);
+			list = od.findAllByOperatorName(name,route);
 			request.setAttribute("Op_list", list);
 			System.out.println(list);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("OpBusDisplay.jsp");

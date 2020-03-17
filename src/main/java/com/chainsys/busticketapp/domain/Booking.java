@@ -11,42 +11,10 @@ public class Booking {
 	private int seatNo;
 	private LocalDate bookedDate;
 	private String genderPreference;
-	private int Amount;
+	private int amount;
 	private long bookingId;
 	private String status;
 	private LocalDate createdDate;
-
-	public long getBookingId() {
-		return bookingId;
-	}
-
-	public void setBookingId(long bookingId) {
-		this.bookingId = bookingId;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public LocalDate getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(LocalDate createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public int getAmount() {
-		return Amount;
-	}
-
-	public void setAmount(int amount) {
-		Amount = amount;
-	}
 
 	public int getUserId() {
 		return userId;
@@ -96,10 +64,42 @@ public class Booking {
 		this.genderPreference = genderPreference;
 	}
 
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	public long getBookingId() {
+		return bookingId;
+	}
+
+	public void setBookingId(long bookingId) {
+		this.bookingId = bookingId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public LocalDate getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(LocalDate createdDate) {
+		this.createdDate = createdDate;
+	}
+
 	@Override
 	public String toString() {
 		return "Booking [userId=" + userId + ", busNum=" + busNum + ", userGender=" + userGender + ", seatNo=" + seatNo
-				+ ", bookedDate=" + bookedDate + ", genderPreference=" + genderPreference + ", Amount=" + Amount
+				+ ", bookedDate=" + bookedDate + ", genderPreference=" + genderPreference + ", amount=" + amount
 				+ ", bookingId=" + bookingId + ", status=" + status + ", createdDate=" + createdDate + "]";
 	}
 

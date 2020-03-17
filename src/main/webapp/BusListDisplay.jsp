@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@ page import="com.chainsys.busticketapp.domain.BusList"%>
-<%@ page import="com.chainsys.busticketapp.dao.BusListDAO"%> 
-<%@ page import="com.chainsys.busticketapp.dao.impl.BusListDAOImpl" %> 
+<%@ page import="com.chainsys.busticketapp.domain.Bus"%>
+<%@ page import="com.chainsys.busticketapp.dao.BusDAO"%> 
+<%@ page import="com.chainsys.busticketapp.dao.impl.BusDAOImpl" %> 
 <%@ page import ="com.chainsys.busticketapp.dto.BusesDetails"%>
 <%@ page import="java.util.List" %>  
 <!DOCTYPE html>
@@ -20,8 +20,8 @@
  <br>
  <br>
  <%
- BusListDAOImpl bl= new BusListDAOImpl();
-List<BusesDetails> bus = (List<BusesDetails>)request.getAttribute("Bus_list");
+ 	BusDAOImpl bl= new BusDAOImpl();
+ List<BusesDetails> bus = (List<BusesDetails>)request.getAttribute("Bus_list");
  %>
  <br>
  <br>

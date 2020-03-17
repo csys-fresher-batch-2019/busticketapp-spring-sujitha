@@ -23,12 +23,13 @@ public class BusName extends HttpServlet {
 			throws ServletException, IOException {
 		OperatorsDetailsDAOImpl od = new OperatorsDetailsDAOImpl();
 		Buses b = new Buses();
-		HttpSession sess = request.getSession();
-		// int route=(Integer)sess.getAttribute("route_no");
+		
 		b.setBusName(request.getParameter("busname"));
+		HttpSession sess = request.getSession();
+		 int route=(Integer)sess.getAttribute("route_no");
 		try {
 			List<Buses> list = new ArrayList<Buses>();
-			list = od.findAllByBusName(b.getBusName());
+			list = od.findAllByBusName(b.getBusName(),route);
 			request.setAttribute("BusName_list", list);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("BusName.jsp");
 			dispatcher.forward(request, response);

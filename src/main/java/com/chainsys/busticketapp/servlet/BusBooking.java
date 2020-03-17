@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.chainsys.busticketapp.dao.impl.BookingDetailDAOImpl;
-import com.chainsys.busticketapp.dao.impl.BusListDAOImpl;
+import com.chainsys.busticketapp.dao.impl.BusDAOImpl;
 import com.chainsys.busticketapp.domain.Booking;
 
 @WebServlet("/BusBooking")
@@ -23,7 +23,7 @@ public class BusBooking extends HttpServlet {
 			throws ServletException, IOException {
 		Booking b = new Booking();
 		int rows = 0;
-		BusListDAOImpl bl = new BusListDAOImpl();
+		BusDAOImpl bl = new BusDAOImpl();
 		int UserId = Integer.parseInt(request.getParameter("userid"));
 		b.setUserId(UserId);
 		int BusNumber = Integer.parseInt(request.getParameter("busnumber"));
@@ -36,6 +36,8 @@ public class BusBooking extends HttpServlet {
 		b.setGenderPreference(Preferences);
 		LocalDate BookingDate = LocalDate.parse(request.getParameter("date"));
 		b.setBookedDate(BookingDate);
+		System.out.println(BookingDate);
+
 		// int Amount = Integer.parseInt(request.getParameter("amount"));
 		// b.setAmount(Amount);
 		PrintWriter out = response.getWriter();

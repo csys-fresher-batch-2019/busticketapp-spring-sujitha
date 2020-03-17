@@ -16,7 +16,7 @@
 <h2>Login</h2>
 <br/>
 <br/>
-<form action="LoginDetails">
+<form action="LoginDetails" autocomplete="off">
 Enter Mobile Number:<input type="number" name="phonenumber"placeholder="phonenumber"required/>
 <br/>
 <br/>

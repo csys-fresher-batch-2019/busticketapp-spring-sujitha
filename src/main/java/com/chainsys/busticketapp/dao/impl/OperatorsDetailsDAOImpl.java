@@ -3,6 +3,7 @@ package com.chainsys.busticketapp.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,23 +11,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chainsys.busticketapp.dao.OperatorsDetailsDAO;
-import com.chainsys.busticketapp.domain.Admin;
 import com.chainsys.busticketapp.domain.OperatorsDetails;
 import com.chainsys.busticketapp.dto.Buses;
 import com.chainsys.busticketapp.exception.DbException;
-import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.util.DbConnection;
 
 public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 	private static final Logger logger = LoggerFactory.getLogger(OperatorsDetailsDAOImpl.class);
 
 	@Override
-	public List<Buses> findAllByOperatorName(String opName) throws DbException {
+	public List<Buses> findAllByOperatorName(String opName, int routeNo) throws DbException {
 		List<Buses> list = new ArrayList<Buses>();
-		String sql = "select  bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bl.bus_num in(select bus_num from buslist where op_name=?)";
+		String sql = " select  bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bl.bus_num in(select bus_num from buslist where op_name=?and bus_num in( select bus_num from busdetails where route_no=?))";
+
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setString(1, opName);
+			pst.setInt(2, routeNo);
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
 					Buses b = new Buses();
@@ -45,20 +46,20 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 					list.add(b);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
 		}
 		return list;
 	}
 
 	@Override
-	public List<Buses> findAllByBusName(String busName) throws DbException {
+	public List<Buses> findAllByBusName(String busName, int routeNo) throws DbException {
 		List<Buses> list = new ArrayList<Buses>();
-		String sql = "select bl.bus_num, bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bl.bus_num in(select bus_num from buslist where bus_name=?)";
+		String sql = "select bl.bus_num, bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bl.bus_num in(select bus_num from buslist where bus_name=?and bus_num in( select bus_num from busdetails where route_no=?))";
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setString(1, busName);
+			pst.setInt(2, routeNo);
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
 					Buses b = new Buses();
@@ -77,21 +78,22 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 					list.add(b);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
 		}
 		return list;
 
 	}
 
 	@Override
-	public List<Buses> findAllByBusModel(String busModel) throws DbException {
+	public List<Buses> findAllByBusModel(String busModel, int routeNo) throws DbException {
 		List<Buses> list = new ArrayList<Buses>();
-		String sql = "select bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bl.bus_num in(select bus_num from buslist where bus_model=?)";
+		String sql = "select bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bl.bus_num in(select bus_num from buslist where bus_model=?and bus_num in( select bus_num from busdetails where route_no=?))";
+
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setString(1, busModel);
+			pst.setInt(2, routeNo);
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
 					Buses b = new Buses();
@@ -110,19 +112,21 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 					list.add(b);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
 		}
 		return list;
 	}
 
 	@Override
-	public List<Buses> findAllByMinimumRatings() throws DbException {
+	public List<Buses> findAllByMinimumRatings(int routeNo, int routeno) throws DbException {
 		List<Buses> list = new ArrayList<Buses>();
-		String sql = "select bl.bus_num, bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bd.ratings in(select min(ratings) from busdetails)";
+		String sql = " select bl.bus_num, bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bd.bus_num in\r\n"
+				+ " (select bus_num from busdetails bd where route_no=? and ratings in ( select  min(ratings)from busdetails  where route_no=?))";
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
+			pst.setInt(1, routeNo);
+			pst.setInt(2, routeno);
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
 					Buses b = new Buses();
@@ -141,19 +145,21 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 					list.add(b);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
 		}
 		return list;
 	}
 
 	@Override
-	public List<Buses> findAllByMaximumRatings() throws DbException {
+	public List<Buses> findAllByMaximumRatings(int routeNo, int routeno) throws DbException {
 		List<Buses> list = new ArrayList<Buses>();
-		String sql = "select bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bd.ratings in(select max(ratings) from busdetails)";
+		String sql = "select bl.bus_num, bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bd.bus_num in\r\n"
+				+ "  (select bus_num from busdetails bd where route_no=? and ratings in ( select  max(ratings)from busdetails  where route_no=?))";
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
+			pst.setInt(1, routeNo);
+			pst.setInt(2, routeno);
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
 					Buses b = new Buses();
@@ -172,19 +178,21 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 					list.add(b);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
 		}
 		return list;
 	}
 
 	@Override
-	public List<Buses> findAllByMinimumPrice() throws DbException {
+	public List<Buses> findAllByMinimumPrice(int routeNo, int routeno) throws DbException {
 		List<Buses> list = new ArrayList<Buses>();
-		String sql = "select bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bd.fair in(select min(fair) from busdetails)";
+		String sql = "select bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bd.bus_num in\r\n"
+				+ "(select bus_num from busdetails bd where route_no=? and fair in(select min(fair) from busdetails where route_no=?))";
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
+			pst.setInt(1, routeNo);
+			pst.setInt(2, routeno);
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
 					Buses b = new Buses();
@@ -203,19 +211,21 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 					list.add(b);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
 		}
 		return list;
 	}
 
 	@Override
-	public List<Buses> findAllByMaximumPrice() throws DbException {
+	public List<Buses> findAllByMaximumPrice(int routeNo, int routeno) throws DbException {
 		List<Buses> list = new ArrayList<Buses>();
-		String sql = "select bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bd.fair in(select max(fair) from busdetails)";
+		String sql = "select bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bd.bus_num in\r\n"
+				+ "(select bus_num from busdetails bd where route_no=? and fair in(select max(fair) from busdetails where route_no=?))";
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
+			pst.setInt(1, routeNo);
+			pst.setInt(2, routeno);
 			try (ResultSet rs = pst.executeQuery();) {
 				while (rs.next()) {
 					Buses b = new Buses();
@@ -234,9 +244,8 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 					list.add(b);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
 		}
 		return list;
 	}
@@ -245,27 +254,24 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 	public int findOperatorIdByOperatorMailIdAndPassword(String operatorEmailId, String operatorPassword)
 			throws DbException {
 		String sql = "select op_id from operator where op_email=?and op_password=?";
-		Admin a = new Admin();
-		int v = 0;
+		int id = 0;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
 			pst.setString(1, operatorEmailId);
 			pst.setString(2, operatorPassword);
 			try (ResultSet rs = pst.executeQuery();) {
 				if (rs.next()) {
-					v = rs.getInt("op_id");
+					id = rs.getInt("op_id");
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND OPERATOR ID", e);
 		}
-		return v;
+		return id;
 	}
 
 	@Override
 	public void save(OperatorsDetails operator) throws DbException {
-		List<OperatorsDetails> list = new ArrayList<OperatorsDetails>();
 		String sql = "insert into operator(op_id,op_name,op_email,op_phn,op_password)values(op_id.nextval,?,?,?,?)";
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql);) {
@@ -275,9 +281,8 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 			pst.setString(4, operator.getOperatorPassword());
 			int rows = pst.executeUpdate();
 			logger.info("No of Rows inserted : " + rows);
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_ADD);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO ADD OPERATOR DATA", e);
 		}
 	}
 
@@ -294,9 +299,8 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 					list.add(o);
 				}
 			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			throw new DbException(ErrorConstant.INVALID_SELECT);
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND OPERATOR", e);
 		}
 		return list;
 	}

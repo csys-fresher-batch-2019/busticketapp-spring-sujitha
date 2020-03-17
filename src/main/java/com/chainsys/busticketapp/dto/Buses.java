@@ -15,6 +15,7 @@ private String toLocation;
 	private  int fair ;
 	private String ratings;
 	private  int availableSeats;
+	
 	public int getBusNum() {
 		return busNum;
 	}

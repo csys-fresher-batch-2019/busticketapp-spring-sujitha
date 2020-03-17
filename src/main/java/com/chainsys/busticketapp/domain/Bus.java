@@ -1,12 +1,12 @@
 package com.chainsys.busticketapp.domain;
 
-public class BusList {
+public class Bus {
 	private int busNum;
 	private String busName;
 	private int noOfSeats;
 	private String seatType;
 	private String busModel;
-	private String opName;
+	private String operatorName;
 
 	public int getBusNum() {
 		return busNum;
@@ -48,18 +48,18 @@ public class BusList {
 		this.busModel = busModel;
 	}
 
-	public String getOpName() {
-		return opName;
+	public String getOperatorName() {
+		return operatorName;
 	}
 
-	public void setOpName(String opName) {
-		this.opName = opName;
+	public void setOperatorName(String operatorName) {
+		this.operatorName = operatorName;
 	}
 
 	@Override
 	public String toString() {
-		return "BusList [busNum=" + busNum + ", busName=" + busName + ", noOfSeats=" + noOfSeats + ", seatType="
-				+ seatType + ", busModel=" + busModel + ", opName=" + opName + "]";
+		return "Bus [busNum=" + busNum + ", busName=" + busName + ", noOfSeats=" + noOfSeats + ", seatType=" + seatType
+				+ ", busModel=" + busModel + ", operatorName=" + operatorName + "]";
 	}
 
 }

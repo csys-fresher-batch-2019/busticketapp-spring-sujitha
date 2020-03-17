@@ -1,10 +1,15 @@
 package com.chainsys.busticketapp.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.chainsys.busticketapp.dao.BusDAO;
+import com.chainsys.busticketapp.dao.BusRoutesDAO;
 import com.chainsys.busticketapp.dao.UserDetailsDAO;
 import com.chainsys.busticketapp.domain.UserDetails;
+import com.chainsys.busticketapp.dto.BusesDetails;
 import com.chainsys.busticketapp.exception.DbException;
 import com.chainsys.busticketapp.exception.ServiceException;
 import com.chainsys.busticketapp.exception.ValidatorException;
@@ -36,17 +41,15 @@ public class UserDetailsService {
 	}
 
 	public int loginDetails(long userPhnNum, String password) throws ServiceException {
-		int v;
-
+		int login;
 		try {
-			
 			validator.validateUserLoginForm(userPhnNum, password);
-			v = userdetailsDAO.findUserIdByPhoneNumberAndPassword(userPhnNum, password);
+			login = userdetailsDAO.findUserIdByPhoneNumberAndPassword(userPhnNum, password);
 		} catch (DbException e) {
 			throw new ServiceException(e);
 		} catch (ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
-		return v;
+		return login;
 	}
 }

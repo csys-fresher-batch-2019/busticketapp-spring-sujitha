@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.chainsys.busticketapp.dao.impl.OperatorsDetailsDAOImpl;
 import com.chainsys.busticketapp.dto.Buses;
@@ -24,8 +25,10 @@ public class AcServ extends HttpServlet {
 		Buses b = new Buses();
 		b.setBusModel(request.getParameter("ac"));
 		System.out.println(b);
+		HttpSession sess = request.getSession();
+		int route=(Integer)sess.getAttribute("route_no");
 		try {
-			list = od.findAllByBusModel(b.getBusModel());
+			list = od.findAllByBusModel(b.getBusModel(),route);
 			System.out.println(list);
 			request.setAttribute("ac_list", list);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("Ac.jsp");
