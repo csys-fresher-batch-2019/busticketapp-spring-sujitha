@@ -42,26 +42,24 @@ public class DisplayBusList extends HttpServlet {
 		LocalDate Date = LocalDate.parse(request.getParameter("date"));
 		System.out.println("Display:" + from + "-" + to);
 		// BusRoutesDAOImpl bi = new BusRoutesDAOImpl();
-		
-			// int routeNo = bi.findRouteByFromAndToLocations(from, to);
-			int routeNo;
-			try {
-				routeNo = busroute.findRoutes(from, to);
-				System.out.println("routeNo: " + routeNo);
-				BusDAOImpl bli = new BusDAOImpl();
-				List<BusesDetails> list1 = new ArrayList<BusesDetails>();
-				// list1 = bli.findAllByRoute(routeNo);
-				list1 = bus.findBus(routeNo);
-				request.setAttribute("Bus_list", list1);
-				System.out.println(list1);
-				HttpSession sess = request.getSession();
-				sess.setAttribute("date", Date);
-				sess.setAttribute("route_no", routeNo);
-				RequestDispatcher dispatcher = request.getRequestDispatcher("BusListDisplay.jsp");
-				dispatcher.forward(request, response);
-			} catch (ServiceException e) {
-				e.printStackTrace();
-			}
-		
+		// int routeNo = bi.findRouteByFromAndToLocations(from, to);
+		int routeNo;
+		try {
+			routeNo = busroute.findRoutes(from, to);
+			System.out.println("routeNo: " + routeNo);
+			BusDAOImpl bli = new BusDAOImpl();
+			List<BusesDetails> list1 = new ArrayList<BusesDetails>();
+			// list1 = bli.findAllByRoute(routeNo);
+			list1 = bus.findBus(routeNo);
+			request.setAttribute("Bus_list", list1);
+			System.out.println(list1);
+			HttpSession sess = request.getSession();
+			sess.setAttribute("date", Date);
+			sess.setAttribute("route_no", routeNo);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("BusListDisplay.jsp");
+			dispatcher.forward(request, response);
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
 	}
 }

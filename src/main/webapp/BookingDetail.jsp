@@ -15,23 +15,15 @@
 <%
 HttpSession sess=request.getSession(false);
 String bus_no=request.getParameter("busNo");
-
 Integer user_id=(Integer)sess.getAttribute("userid");
 LocalDate date=(LocalDate)sess.getAttribute("date");
 LocalDate today = LocalDate.now();
 %>
-
 <form action="BusBooking">
-<input type="hidden" name="userid"value="<%=user_id %>" readonly required/>
+Number Of Tickets:<input type="number" name="numberofseats"value="numberofseats" required/>
 <br>
 <br>
-Enter Bus Number:<input type="text" name="busnumber"value="<%=bus_no%>" readonly required/>
-<br>
-<br>
- Number Of Tickets:<input type="number" name="numberofseats"value="numberofseats" required/>
-<br>
-<br>
- Date:<input type="date" id="date" name="date" value="<%=date%>" readonly  required>
+Date:<input type="date" id="date" name="date" value="<%=date%>" readonly  required>
 <br>
 <br>
 Gender 
@@ -47,6 +39,17 @@ Select preferences:
 <br>
 <br>
 <button type="submit" class="btn btn-success">submit</button>
+<br>
+<br>
+<%String errorMessage = (String)request.getAttribute("errorMessage");
+if(errorMessage !=null)
+{%>
+<font color="red"style="font: bold"><%=errorMessage%>
+<%}%>
+<input type="hidden" name="userid"value="<%=user_id %>" readonly required/>
+<br>
+<br>
+<input type="hidden" name="busnumber"value="<%=bus_no%>" readonly required/>
 <br>
 <br>
 

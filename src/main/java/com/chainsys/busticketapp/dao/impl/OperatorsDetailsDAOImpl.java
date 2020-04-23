@@ -9,12 +9,14 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.chainsys.busticketapp.dao.OperatorsDetailsDAO;
 import com.chainsys.busticketapp.domain.OperatorsDetails;
 import com.chainsys.busticketapp.dto.Buses;
 import com.chainsys.busticketapp.exception.DbException;
 import com.chainsys.busticketapp.util.DbConnection;
+@Repository
 
 public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 	private static final Logger logger = LoggerFactory.getLogger(OperatorsDetailsDAOImpl.class);
@@ -286,7 +288,7 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 		}
 	}
 
-	@Override
+
 	public List<OperatorsDetails> findOperatorName() throws DbException {
 		List<OperatorsDetails> list = new ArrayList<OperatorsDetails>();
 		String sql = "select op_name from operator";
@@ -304,4 +306,72 @@ public class OperatorsDetailsDAOImpl implements OperatorsDetailsDAO {
 		}
 		return list;
 	}
+	@Override
+	public List<Buses> findAllByOperatorName(String opName) throws DbException {
+		List<Buses> list = new ArrayList<Buses>();
+		String sql = " select  bl.bus_num,bl.bus_name,br.from_location,br.to_location,bl.no_of_seats, bl.seat_type,bl.bus_model,bd.start_time,bd.end_time,bd.fair,bd.ratings,bd.available_seats from buslist bl,busdetails bd,busroutes br where bl.bus_num=bd.bus_num and br.route_no=bd.route_no and bl.bus_num in(select bus_num from buslist where op_name=?)"; 
+ try (Connection connection = DbConnection.getConnection();
+				PreparedStatement pst = connection.prepareStatement(sql);) {
+			pst.setString(1, opName);
+			try (ResultSet rs = pst.executeQuery();) {
+				while (rs.next()) {
+					Buses b = new Buses();
+					b.setBusNum(rs.getInt("bus_num"));
+					b.setBusName(rs.getString("bus_name"));
+					b.setFromLocation(rs.getString("from_location"));
+					b.setToLocation(rs.getString("to_location"));
+					b.setNoOfSeats(rs.getInt("no_of_seats"));
+					b.setSeatType(rs.getString("seat_type"));
+					b.setBusModel(rs.getString("bus_model"));
+					b.setStartTime(rs.getString("start_time"));
+					b.setEndTime(rs.getString("end_time"));
+					b.setFair(rs.getInt("fair"));
+					b.setRatings(rs.getString("ratings"));
+					b.setAvailableSeats(rs.getInt("available_seats"));
+					list.add(b);
+				}
+			}
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
+		}
+		return list;
+	}
+	public List<Buses> findOperatorNames(int routeNo) throws DbException {
+		List<Buses> list = new ArrayList<Buses>();
+		String sql = "select distinct op_name from buslist where bus_num in(select bus_num from busdetails where route_no=?)";
+		try (Connection connection = DbConnection.getConnection();
+				PreparedStatement pst = connection.prepareStatement(sql);) {
+			pst.setInt(1,routeNo);
+		
+			try (ResultSet rs = pst.executeQuery();) {
+				while (rs.next()) {
+					Buses o = new Buses();
+					o.setOpName(rs.getString("op_name"));
+					list.add(o);
+				}
+			}
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND OPERATOR", e);
+		}
+		return list;
+	}
+		public List<Buses> findOperatorName(int opId) throws DbException {
+			List<Buses> list = new ArrayList<Buses>();
+			String sql = "select op_name from operator where op_id=?"; 
+				try (Connection connection = DbConnection.getConnection();
+					PreparedStatement pst = connection.prepareStatement(sql);) {
+				pst.setInt(1,opId);
+			try (ResultSet rs = pst.executeQuery();) {
+					while (rs.next()) {
+						Buses o = new Buses();
+						o.setOpName(rs.getString("op_name"));
+						list.add(o);
+					}
+				}
+			} catch (SQLException e) {
+				throw new DbException("UNABLE TO FIND OPERATOR", e);
+			}
+			return list;
+}
+	
 }

@@ -18,36 +18,35 @@ import com.chainsys.busticketapp.dao.impl.TicketBookingDAOImpl;
 import com.chainsys.busticketapp.dao.impl.UserDetailsDAOImpl;
 
 public class DAOFactory {
-	public static BusDAO getBusListDAO()
-	{
-	return new BusDAOImpl();
+	public static BusDAO getBusListDAO() {
+		return new BusDAOImpl();
 	}
-	public static AdminDAO getAdminDAO()
-	{
-	return new AdminDAOImpl();
+
+	public static AdminDAO getAdminDAO() {
+		return new AdminDAOImpl();
 	}
-	public static BookingDetailDAO getBookingDeatilsDAO()
-	{
-	return new BookingDetailDAOImpl();
+
+	public static BookingDetailDAO getBookingDeatilsDAO() {
+		return new BookingDetailDAOImpl();
 	}
-	public static BusDetailsDAO getBusDetailsDAO()
-	{
-	return new  BusDetailsDAOImpl();
+
+	public static BusDetailsDAO getBusDetailsDAO() {
+		return new BusDetailsDAOImpl();
 	}
-	public static BusRoutesDAO getBusRoutesDAO()
-	{
-	return new  BusRoutesDAOImpl();
+
+	public static BusRoutesDAO getBusRoutesDAO() {
+		return new BusRoutesDAOImpl();
 	}
-	public static OperatorsDetailsDAO getOperatorsDetailsDAO()
-	{
-	return new  OperatorsDetailsDAOImpl();
+
+	public static OperatorsDetailsDAO getOperatorsDetailsDAO() {
+		return new OperatorsDetailsDAOImpl();
 	}
-	public static TicketBookingDAO getTicketBookingDAO()
-	{
-	return new  TicketBookingDAOImpl();
+
+	public static TicketBookingDAO getTicketBookingDAO() {
+		return new TicketBookingDAOImpl();
 	}
-	public static UserDetailsDAO getUserDetailsDAO()
-	{
-	return new  UserDetailsDAOImpl();
+
+	public static UserDetailsDAO getUserDetailsDAO() {
+		return new UserDetailsDAOImpl();
 	}
 }

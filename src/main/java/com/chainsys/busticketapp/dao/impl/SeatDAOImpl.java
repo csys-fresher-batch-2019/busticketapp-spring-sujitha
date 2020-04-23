@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chainsys.busticketapp.exception.DbException;
-import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.service.SeatService;
 import com.chainsys.busticketapp.util.DbConnection;
 

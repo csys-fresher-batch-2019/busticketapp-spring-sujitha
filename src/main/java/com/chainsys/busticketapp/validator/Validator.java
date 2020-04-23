@@ -19,7 +19,7 @@ public class Validator {
 		if (u.getUserGender() == null || "".equals(u.getUserGender().trim())) {
 			throw new ValidatorException("Gender cannot be blank/empty");
 		}
-		if (u.getUserPhnNum() == 0 || Long.toString(u.getUserPhnNum()).length() < 10
+		if (u.getUserPhnNum() <= 0 || Long.toString(u.getUserPhnNum()).length() < 10
 				|| Long.toString(u.getUserPhnNum()).length() > 10) {
 
 			throw new ValidatorException("Mobile-number is invalid");
@@ -31,8 +31,7 @@ public class Validator {
 	}
 
 	public void validateUserLoginForm(long phoneNum, String password) throws ValidatorException {
-		UserDetails u = new UserDetails();
-		if (phoneNum == 0) {
+		if (phoneNum <= 0) {
 			throw new ValidatorException("Mobile-number is invalid");
 		}
 		if (password == null || "".equals(password.trim())) {
@@ -40,7 +39,7 @@ public class Validator {
 		}
 	}
 
-	public static void validateAdminLoginForm(Admin a) throws ValidatorException {
+	public void validateAdminLoginForm(Admin a) throws ValidatorException {
 		if (a.getAdminMailId() == null || "".equals(a.getAdminMailId().trim())) {
 			throw new ValidatorException("Mail Id cannot be blank/empty");
 		}
@@ -64,7 +63,7 @@ public class Validator {
 		}
 	}
 
-	public static void validateOperatorsLoginForm(OperatorsDetails o) throws ValidatorException {
+	public  void validateOperatorsLoginForm(OperatorsDetails o) throws ValidatorException {
 		if (o.getOperatorEmailId() == null || "".equals(o.getOperatorEmailId().trim())) {
 			throw new ValidatorException("Mail Id cannot be blank/empty");
 		}
@@ -82,22 +81,22 @@ public class Validator {
 		}
 	}
 
-	public static void validateTicketBookingForm(Booking b) throws ValidatorException {
+	public  void validateTicketBookingForm(Booking b) throws ValidatorException {
 		if (b.getBusNum() == 0) {
 			throw new ValidatorException("Bus Number cannot be empty/blank");
 		}
-		if (b.getSeatNo() == 0) {
-			throw new ValidatorException("Seats cannot be empty/blank");
+		if (b.getSeatNo() <= 0) {
+			throw new ValidatorException("Seats cannot be empty/blank/negative values");
 		}
-		if (b.getBookedDate() == null) {
-			throw new ValidatorException("Bus Number cannot be empty/blank");
-		}
+		//if (b.getBookedDate() == null) {
+			//throw new ValidatorException("Bus Number cannot be empty/blank");
+		//}
 		if (b.getUserGender() == null || "".equals(b.getUserGender().trim())) {
 			throw new ValidatorException("Gender cannot be empty/blank");
 		}
 		if (b.getGenderPreference() == null || "".equals(b.getGenderPreference().trim())) {
 			throw new ValidatorException("Gender Preference cannot be empty/blank");
 		}
-
+		System.out.println("hello");
 	}
 }

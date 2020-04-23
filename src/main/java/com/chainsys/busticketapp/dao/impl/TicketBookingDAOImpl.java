@@ -11,15 +11,16 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.chainsys.busticketapp.dao.TicketBookingDAO;
 import com.chainsys.busticketapp.domain.Booking;
 import com.chainsys.busticketapp.domain.TicketBooking;
 import com.chainsys.busticketapp.dto.BusSeatsBooked;
 import com.chainsys.busticketapp.exception.DbException;
-import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.util.DbConnection;
 
+@Repository
 public class TicketBookingDAOImpl implements TicketBookingDAO {
 	private static final Logger logger = LoggerFactory.getLogger(TicketBookingDAOImpl.class);
 
@@ -36,6 +37,7 @@ public class TicketBookingDAOImpl implements TicketBookingDAO {
 			pst.setInt(7, tic.getPayment());
 			pst.setString(8, tic.getStatus());
 			int row = pst.executeUpdate();
+			logger.info("No of Rows: " + row);
 		} catch (SQLException e) {
 			throw new DbException("UNABLE TO ADD DATA", e);
 		}
@@ -120,7 +122,7 @@ public class TicketBookingDAOImpl implements TicketBookingDAO {
 		return seats;
 	}
 
-	public List<Booking> findAllByUserIdAndBookedDate(int userId) throws Exception {
+	public List<Booking> findAllByUserIdAndBookedDate(int userId) throws DbException {
 		List<Booking> list = new ArrayList<Booking>();
 		String sql = "select * from booking where user_id=? order by booked_date desc";
 		logger.info("Booking Details : " + sql);
@@ -154,4 +156,31 @@ public class TicketBookingDAOImpl implements TicketBookingDAO {
 		}
 		return list;
 	}
+
+	public void save(int busNum, String busName, int noOfSeats, String seatType, String busModel, String opName)
+			throws DbException {
+		String sql = "insert into seater(bus_num,seat_type,right_window_seat,right_center_seat,left_window_seat,left_center_seat)values(?,?,?,?,?,?,?)";
+		try (Connection connection = DbConnection.getConnection();
+				PreparedStatement pst = connection.prepareStatement(sql);) {
+			pst.setInt(1, busNum);
+			pst.setString(2, seatType);
+			String RightWindowSeat = null;
+			pst.setString(3, RightWindowSeat);
+			String RightCenteSeat = null;
+			pst.setString(4, RightCenteSeat);
+			String LeftWindowSeat = null;
+			pst.setString(5, LeftWindowSeat);
+			String LeftCenterSeat = null;
+			pst.setString(6, LeftCenterSeat);
+			int totalSeats = 0;
+			pst.setInt(7, totalSeats);
+			if (seatType.equals("seater") && totalSeats <= 20) {
+				int row = pst.executeUpdate();
+				logger.info("No of Rows inserted : " + row);
+			}
+		} catch (Exception e) {
+			throw new DbException("UNABLE TO ADD DATA", e);
+		}
+	}
+
 }

@@ -35,7 +35,6 @@ public class LoginDetails extends HttpServlet {
 			int uid = user.loginDetails(ud.getUserPhnNum(), ud.getPassword());
 			out.print(uid);
 			if (uid != 0) {
-
 				HttpSession sess = request.getSession();
 				sess.setAttribute("userid", uid);
 				response.sendRedirect("Routes.jsp");
@@ -48,6 +47,5 @@ public class LoginDetails extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
 			dispatcher.forward(request, response);
 		}
-
 	}
 }

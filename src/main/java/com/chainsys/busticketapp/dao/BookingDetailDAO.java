@@ -10,7 +10,8 @@ public interface BookingDetailDAO {
 
 	public int findbyBookedDateAndBusNumber(LocalDate bookedDate, int busNum) throws DbException;
 
-	public Booking findbyBookedDateAndBusNumberAndSeatNo(LocalDate bookedDate, int BusNum, int seatNo) throws DbException;
+	public Booking findbyBookedDateAndBusNumberAndSeatNo(LocalDate bookedDate, int BusNum, int seatNo)
+			throws DbException;
 
 	public HashMap<Integer, String> findByBusNumber(int busNum) throws DbException;
 
@@ -21,4 +22,9 @@ public interface BookingDetailDAO {
 	public int bookUnfilledSeats(Booking booking) throws DbException;
 
 	public void update(String bookingId) throws DbException;
+
+	public int save(Booking booking) throws DbException;
+
+	public int findPriceByBusNumber(int busNum) throws DbException;
+
 }

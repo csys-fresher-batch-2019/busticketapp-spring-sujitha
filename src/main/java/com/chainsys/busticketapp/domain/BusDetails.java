@@ -1,8 +1,6 @@
 package com.chainsys.busticketapp.domain;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
 
 public class BusDetails {
 	private int travelId;

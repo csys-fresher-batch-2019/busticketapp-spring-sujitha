@@ -9,14 +9,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.chainsys.busticketapp.dao.BookingDetailDAO;
 import com.chainsys.busticketapp.dao.impl.BookingDetailDAOImpl;
 import com.chainsys.busticketapp.exception.DbException;
+import com.chainsys.busticketapp.exception.ServiceException;
+import com.chainsys.busticketapp.service.BookingService;
 
 @WebServlet("/CancelTicketServlet")
 
 public class CancelTicketServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	@Autowired
+	private BookingService booking;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -24,9 +30,9 @@ public class CancelTicketServlet extends HttpServlet {
 		System.out.println(bookingId);
 		BookingDetailDAO bookingDeatilsDAO = new BookingDetailDAOImpl();
 		try {
-			bookingDeatilsDAO.update(bookingId);
-		} catch (DbException e) {
-			// TODO Auto-generated catch block
+			// bookingDeatilsDAO.update(bookingId);
+			booking.updateCancelTicket(bookingId);
+		} catch (ServiceException e) {
 			e.printStackTrace();
 		}
 		PrintWriter out = response.getWriter();

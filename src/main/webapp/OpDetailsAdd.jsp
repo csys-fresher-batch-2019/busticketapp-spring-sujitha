@@ -6,7 +6,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $.get("AdminOpDetailsAdd.jsp", function(data, status){
+      alert("Data: " + data + "\nStatus: " + status);
+    });
+  });
+});
+</script>
 </head>
 <body>
 <jsp:include page="header.jsp"></jsp:include>
@@ -35,6 +44,7 @@ Enter Password:<input type="text" name="password"required/>
 <button type="submit">submit</button>
 <br>
 <br>
+<button>Send an HTTP GET request to a page and get the result back</button>
 </form>
 </div>
 </body>

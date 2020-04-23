@@ -19,5 +19,5 @@ public interface TicketBookingDAO {
 
 	public int findSeatsCountByTravelIdAndUserId(int travelId, int userId) throws DbException;
 
-	public List<Booking> findAllByUserIdAndBookedDate(int userId) throws Exception;
+	public List<Booking> findAllByUserIdAndBookedDate(int userId) throws DbException;
 }

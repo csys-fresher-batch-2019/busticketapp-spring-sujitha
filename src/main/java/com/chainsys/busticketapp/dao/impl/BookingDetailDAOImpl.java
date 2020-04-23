@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,16 @@ import org.springframework.stereotype.Repository;
 
 import com.chainsys.busticketapp.dao.BookingDetailDAO;
 import com.chainsys.busticketapp.domain.Booking;
+import com.chainsys.busticketapp.domain.OperatorsDetails;
 import com.chainsys.busticketapp.exception.DbException;
 import com.chainsys.busticketapp.exception.ErrorConstant;
+import com.chainsys.busticketapp.service.BookingService;
+import com.chainsys.busticketapp.service.OperatorsService;
 import com.chainsys.busticketapp.service.SeatService;
 import com.chainsys.busticketapp.util.DbConnection;
+import com.chainsys.busticketapp.dto.Buses;
+import com.chainsys.busticketapp.dto.Users;
+
 @Repository
 
 public class BookingDetailDAOImpl implements BookingDetailDAO {
@@ -212,7 +219,7 @@ public class BookingDetailDAOImpl implements BookingDetailDAO {
 		}
 	}
 
-	public int save(Booking booking) throws Exception {
+	public int save(Booking booking) throws DbException {
 		String str = "insert into booking(booking_id,user_id,bus_num,user_gender,seat_no,booked_date,gender_preferences,amount) values(booked_id.nextval,?,?,?,?,?,?,?)";
 		logger.info("Booking : " + str);
 		int rows = 0;
@@ -232,7 +239,7 @@ public class BookingDetailDAOImpl implements BookingDetailDAO {
 		return (rows);
 	}
 
-	public int findPriceByBusNumber(int busNum) throws Exception {
+	public int findPriceByBusNumber(int busNum) throws DbException {
 		String sql = "Select fair from busdetails where bus_num=?";
 		logger.info("Fare : " + sql);
 		int price = 0;
@@ -249,4 +256,75 @@ public class BookingDetailDAOImpl implements BookingDetailDAO {
 		}
 		return price;
 	}
+
+	public String findUserGender(LocalDate bookedDate, String status, int busNum) throws Exception {
+		String g = null;
+		String sql = "select user_gender from booking where booked_date=? and status=? and bus_num=?";
+		logger.info("Booking : " + sql);
+		try (Connection connection = DbConnection.getConnection();
+				PreparedStatement pst = connection.prepareStatement(sql);) {
+			pst.setDate(1, Date.valueOf(bookedDate));
+			pst.setString(2, status);
+			pst.setInt(3, busNum);
+			try (ResultSet rs = pst.executeQuery();) {
+				while (rs.next()) {
+					g = (rs.getString("user_gender"));
+				}
+			}
+		} catch (SQLException e) {
+			throw new DbException("UNABLE TO FIND DATA", e);
+		}
+		return g;
+	}
+	public static void main(String[] args) throws Exception {
+		BookingDetailDAOImpl t = new BookingDetailDAOImpl();
+		//String user = t.findUserGender(LocalDate.parse("2020-03-28"), "BOOKED", 8);
+		//System.out.println(user);
+		/*BookingService bs= new BookingService();
+		Booking b=new Booking();
+
+	int s=bs.addBooking(b);
+		System.out.println(s);
+int a = bs.getPrice(1);
+System.out.println(a);*/
+
+OperatorsService os= new OperatorsService();
+		/*List<OperatorsDetails> list1 = os.findOperator();
+		System.out.println(list1);
+		OperatorsDetailsDAOImpl o = new OperatorsDetailsDAOImpl();
+		List<Buses> list=new ArrayList<Buses>();
+		list=o.findAllByOperatorName("TAT Travels");
+		System.out.println("hi");
+		System.out.println(list);
+		for(Buses buses:list)
+		{
+			
+			System.out.println(buses);
+		}*/
+		
+		/*List<Buses> list=new ArrayList<Buses>();
+		list=os.findByOperatorName("TAT Travels");
+		System.out.println("hi");
+		System.out.println(list);
+		for(Buses buses:list)
+		{
+			
+			System.out.println(buses);
+		}*/
+		OperatorsDetailsDAOImpl s = new OperatorsDetailsDAOImpl();
+		//List<Buses> list=new ArrayList<Buses>();
+           /*list=s.findOperatorNames(1);
+	System.out.println(list);*/
+	//int a=s.findOperatorIdByOperatorMailIdAndPassword("tat@gmail.com","tat1234");
+	//System.out.println(a);
+	//List<Buses> list=new ArrayList<Buses>();
+
+	//List<Buses> b=s.findOperatorName(1);
+	//System.out.println(b);
+ UserDetailsDAOImpl us= new UserDetailsDAOImpl();
+	List<Users> list = new ArrayList<Users>();
+	list=us.findUserDetails("BOOKED", LocalDate.parse("2020-04-13"), 11);
+	System.out.println("test:"+list);
+		
+	}	
 }

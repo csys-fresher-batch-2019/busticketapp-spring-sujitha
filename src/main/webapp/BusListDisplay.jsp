@@ -11,16 +11,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
 </head>
 <body>
 <jsp:include page="header.jsp"></jsp:include>
 <h2>BusList</h2>
- 
  <br>
  <br>
  <%
- 	BusDAOImpl bl= new BusDAOImpl();
+ BusDAOImpl bl= new BusDAOImpl();
  List<BusesDetails> bus = (List<BusesDetails>)request.getAttribute("Bus_list");
  %>
  <br>
@@ -41,12 +39,10 @@
  <th></th>
  </tr>
  </thead>
- 
  <%
  if ( bus != null){
  for(BusesDetails b:bus){
  %><tr>
- 
  <td><%=b.getBusNum()  %></td>
  <td><%=b.getBusName() %></td>
  <td><%=b.getNoOfSeats()%></td>
@@ -58,13 +54,11 @@
  <td><%=b.getRatings()%></td>
  <td><%=b.getAvailableSeats()%></td>
 <td><a href="BookingDetail.jsp?busNo=<%=b.getBusNum() %>" class="btn btn-success">Book</a></td>
-
  </tr><% 
    HttpSession sess=request.getSession();
 	      sess.setAttribute("busNo",b.getBusNum());
 	      sess.setAttribute("amount",b.getFair());
  }}%>
  </table>
- </form>
 </body>
 </html>

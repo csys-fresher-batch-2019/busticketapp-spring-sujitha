@@ -12,23 +12,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.chainsys.busticketapp.dao.impl.OperatorsDetailsDAOImpl;
 import com.chainsys.busticketapp.dto.Buses;
+import com.chainsys.busticketapp.service.OperatorsService;
 
 @WebServlet("/HighRatingServ")
 
 public class HighRatingServ extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	@Autowired
+	private OperatorsService operators;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		OperatorsDetailsDAOImpl od = new OperatorsDetailsDAOImpl();
 		HttpSession sess = request.getSession();
-		 int route=(Integer)sess.getAttribute("route_no");
-		Buses b = new Buses();
+		int route = (Integer) sess.getAttribute("route_no");
+		// Buses b = new Buses();
 		try {
 			List<Buses> list = new ArrayList<Buses>();
-			list = od.findAllByMaximumRatings(route,route);
+			// list = od.findAllByMaximumRatings(route,route);
+			list = operators.findMaxRatings(route, route);
 			request.setAttribute("high", list);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("HighRating.jsp");
 			dispatcher.forward(request, response);

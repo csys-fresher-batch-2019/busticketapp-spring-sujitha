@@ -21,8 +21,9 @@ import com.chainsys.busticketapp.util.Logger;
 
 public class Registration extends HttpServlet {
 	private static final Logger log = Logger.getInstance();
-@Autowired
-private UserDetailsService user;
+	@Autowired
+	private UserDetailsService user;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		UserDetails ud = new UserDetails();
@@ -30,16 +31,16 @@ private UserDetailsService user;
 		ud.setUserGender(request.getParameter("gender"));
 		ud.setUserPhnNum(Long.parseLong(request.getParameter("mobileno")));
 		ud.setPassword(request.getParameter("password"));
-		UserDetailsDAOImpl udi = new UserDetailsDAOImpl();
-		
+		// UserDetailsDAOImpl udi = new UserDetailsDAOImpl();
 		try {
-			//udi.save(ud.getUserName(), ud.getUserPhnNum(), ud.getUserGender(), ud.getPassword());
+			// udi.save(ud.getUserName(), ud.getUserPhnNum(), ud.getUserGender(),
+			// ud.getPassword());
 			user.registrationDetails(ud.getUserName(), ud.getUserPhnNum(), ud.getUserGender(), ud.getPassword());
 			response.sendRedirect("Login.jsp");
 		} catch (Exception e) {
 			request.setAttribute("errorMessage", e.getMessage());
 			RequestDispatcher dispatcher = request.getRequestDispatcher("Registration.jsp");
-			dispatcher.forward(request, response);	
+			dispatcher.forward(request, response);
 		}
 	}
 }

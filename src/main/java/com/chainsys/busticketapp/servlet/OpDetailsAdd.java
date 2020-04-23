@@ -9,24 +9,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.chainsys.busticketapp.dao.impl.OperatorsDetailsDAOImpl;
 import com.chainsys.busticketapp.domain.OperatorsDetails;
+import com.chainsys.busticketapp.service.AdminService;
+import com.chainsys.busticketapp.service.OperatorsService;
 
 @WebServlet("/OpDetailsAdd")
 
 public class OpDetailsAdd extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	@Autowired
+	private OperatorsService operators;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		OperatorsDetailsDAOImpl od = new OperatorsDetailsDAOImpl();
+		// OperatorsDetailsDAOImpl od = new OperatorsDetailsDAOImpl();
 		OperatorsDetails o = new OperatorsDetails();
 		o.setOperatorName(request.getParameter("name"));
 		o.setOperatorEmailId(request.getParameter("email"));
 		o.setOperatorPhoneNumber(request.getParameter("number"));
 		o.setOperatorPassword(request.getParameter("password"));
 		try {
-			od.save(o);
+			// od.save(o);
+			operators.saveAdminOpDetails(o);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("aaa.jsp");
 			dispatcher.forward(request, response);
 		} catch (Exception e) {

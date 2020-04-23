@@ -24,7 +24,7 @@ Gender
 <input type="radio" name="gender" value="M">male
 <input type="radio" name="gender" value="F">female
 <br/>
-Hobbbies
+Hobbies
 <input type="checkbox" name="hobbies" value="cricket">cricket
 
 <input type="checkbox" name="hobbies" value="football">football
@@ -54,8 +54,8 @@ body {
   background-size: cover;
 }
 </style>
-
-</style>
 <button type="submit">submit</button>
+</image>
+</form>
 </body>
 </html>

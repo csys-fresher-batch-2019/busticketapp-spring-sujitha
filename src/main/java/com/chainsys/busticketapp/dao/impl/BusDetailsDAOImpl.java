@@ -15,10 +15,9 @@ import com.chainsys.busticketapp.dao.BusDetailsDAO;
 import com.chainsys.busticketapp.domain.BusDetails;
 import com.chainsys.busticketapp.dto.BusFare;
 import com.chainsys.busticketapp.exception.DbException;
-import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.util.DbConnection;
 
-public class BusDetailsDAOImpl implements BusDetailsDAO {
+public class BusDetailsDAOImpl implements BusDetailsDAO{
 	private static final Logger logger = LoggerFactory.getLogger(BusDetailsDAOImpl.class);
 
 	public void updateprice(int fair, int travelId) throws DbException {

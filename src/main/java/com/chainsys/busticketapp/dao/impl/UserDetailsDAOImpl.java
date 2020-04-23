@@ -1,9 +1,13 @@
 package com.chainsys.busticketapp.dao.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import com.chainsys.busticketapp.dao.UserDetailsDAO;
 import com.chainsys.busticketapp.domain.UserDetails;
-import com.chainsys.busticketapp.dto.UserGenderEnum;
+import com.chainsys.busticketapp.dto.Users;
 import com.chainsys.busticketapp.exception.DbException;
-import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.util.DbConnection;
 
 @Repository
@@ -105,20 +108,7 @@ public class UserDetailsDAOImpl implements UserDetailsDAO {
 		}
 	}
 
-	public void updateGenderByUserId(int userID, UserGenderEnum userGender) throws DbException {
-		String sql = "UPDATE USER_DETAILS SET USER_GENDER=? WHERE USER_ID=?";
-		logger.info("Update : " + sql);
-		try (Connection connection = DbConnection.getConnection();
-				PreparedStatement pst = connection.prepareStatement(sql);) {
-			pst.setString(1, userGender.toString());
-			pst.setInt(2, userID);
-			int rows = pst.executeUpdate();
-			logger.info("No Of Rows Updated : " + rows);
-		} catch (SQLException e) {
-			throw new DbException("UNABLE TO UPDATE GENDER", e);
-		}
-	}
-
+	
 	public boolean findByPhoneNumberAndPassword(long userPhnNum, String password) throws DbException {
 		String sql = "select user_phn_num,password from user_details where user_phn_num=? and password = ?";
 		logger.info("Users : " + sql);
@@ -160,4 +150,29 @@ public class UserDetailsDAOImpl implements UserDetailsDAO {
 		}
 		return id;
 	}
+
+ public List<Users> findUserDetails(String Status,LocalDate bookedDate,int busNum) throws DbException{
+		List<Users> list = new ArrayList<Users>();
+String sql="select u.user_name,u.user_phn_num,u.user_gender,b.seat_no from user_details u,booking b where u.user_id=b.user_id and status=? and b.booked_date=?and bus_num=?";
+try (Connection connection = DbConnection.getConnection();
+		PreparedStatement pst = connection.prepareStatement(sql);) {
+	 pst.setString(1,Status);
+	 pst.setDate(2, Date.valueOf(bookedDate));
+	 pst.setInt(3, busNum);
+	 try (ResultSet rs = pst.executeQuery();) {
+			while (rs.next()) {
+				Users u = new Users();
+				u.setUserName(rs.getString("user_name"));
+				u.setUserPhnNum(rs.getLong("user_phn_num"));
+                u.setUserGender(rs.getString("user_gender"));
+                u.setSeatNo(rs.getInt("seat_no"));
+               list.add(u);
+               System.out.println("usersimpl:"+list);
+			}
+		}
+	} catch (SQLException e) {
+		throw new DbException("UNABLE TO FIND DATA", e);
+	}
+	return list;
+}
 }

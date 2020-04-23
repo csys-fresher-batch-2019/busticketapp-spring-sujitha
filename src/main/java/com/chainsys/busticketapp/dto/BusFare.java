@@ -3,7 +3,6 @@ package com.chainsys.busticketapp.dto;
 public class BusFare {
 
 	private String busName;
-	
 	private int fare;
 
 	public String getBusName() {

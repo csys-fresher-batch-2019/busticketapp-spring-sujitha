@@ -11,13 +11,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.chainsys.busticketapp.dao.impl.OperatorsDetailsDAOImpl;
 import com.chainsys.busticketapp.dto.Buses;
+import com.chainsys.busticketapp.service.OperatorsService;
 
 @WebServlet("/NonAcServ")
 
 public class NonAcServ extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	@Autowired
+	private OperatorsService operators;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -26,9 +31,10 @@ public class NonAcServ extends HttpServlet {
 		List<Buses> list = null;
 		b.setBusModel(request.getParameter("nonac"));
 		HttpSession sess = request.getSession();
-		int route=(Integer)sess.getAttribute("route_no");
+		int route = (Integer) sess.getAttribute("route_no");
 		try {
-			list = od.findAllByBusModel(b.getBusModel(),route);
+			// list = od.findAllByBusModel(b.getBusModel(),route);
+			list = operators.findModel(b.getBusModel(), route);
 			request.setAttribute("nonac", list);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("NonAc.jsp");
 			dispatcher.forward(request, response);

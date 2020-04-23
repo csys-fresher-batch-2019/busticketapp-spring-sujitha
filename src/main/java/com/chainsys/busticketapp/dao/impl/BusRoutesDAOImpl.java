@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import com.chainsys.busticketapp.dao.BusRoutesDAO;
 import com.chainsys.busticketapp.domain.BusRoutes;
 import com.chainsys.busticketapp.exception.DbException;
-import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.util.DbConnection;
 @Repository
 public class BusRoutesDAOImpl implements BusRoutesDAO {
@@ -47,7 +46,7 @@ public class BusRoutesDAOImpl implements BusRoutesDAO {
 			pst.setString(2, fromLocation);
 			pst.setString(3, toLocation);
 			int row = pst.executeUpdate();
-			logger.info("No of Rows: " + st);
+			logger.info("No of Rows: " + row);
 		} catch (SQLException e) {
 			throw new DbException("UNABLE TO ADD ROUTES", e);
 		}

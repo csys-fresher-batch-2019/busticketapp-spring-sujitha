@@ -16,7 +16,6 @@ import com.chainsys.busticketapp.dao.BusDAO;
 import com.chainsys.busticketapp.domain.Bus;
 import com.chainsys.busticketapp.dto.BusesDetails;
 import com.chainsys.busticketapp.exception.DbException;
-import com.chainsys.busticketapp.exception.ErrorConstant;
 import com.chainsys.busticketapp.util.DbConnection;
 @Repository
 public class BusDAOImpl implements BusDAO {

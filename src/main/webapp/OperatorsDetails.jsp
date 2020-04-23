@@ -6,22 +6,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title></title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
 </head>
 <body>
 <jsp:include page="header.jsp"></jsp:include>
 <div id="container">
-
-<td>
 <br>
 <br>
 <br>
-<a href="OpDetailsDisplay" class="btn btn-danger">Operators</a></td>
+<a href="OpDetailsDisplay" class="btn btn-danger">Operators</a>
 <br>
 <br>
-<a href="OpDetailsAdd.jsp" class="btn btn-danger">Add Operators</a></td>
-
-
-
+<a href="OpDetailsAdd.jsp" class="btn btn-danger">Add Operators</a>
+</div>
 </body>
 </html>
